@@ -1,4 +1,10 @@
+
 /* See LICENSE file for copyright and license details. */
+
+static void alt_tab(const Arg *arg);
+static int alt_tab_count = 0;
+static void start_alt_tab(const Arg *arg) { alt_tab_count = 0; }
+
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -57,43 +63,50 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *termcmd[]  = { "urxvtc", "-tr", "-sh", "8", NULL };
+static const char *browsercmd[] = { "brave" };
+/* static const char *termcmd[]  = { "st", NULL }; */
 
 static Key keys[] = {
-	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY,                       XK_Return, zoom,           {0} },
-	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_space,  setlayout,      {0} },
-	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	TAGKEYS(                        XK_1,                      0)
-	TAGKEYS(                        XK_2,                      1)
-	TAGKEYS(                        XK_3,                      2)
-	TAGKEYS(                        XK_4,                      3)
-	TAGKEYS(                        XK_5,                      4)
-	TAGKEYS(                        XK_6,                      5)
-	TAGKEYS(                        XK_7,                      6)
-	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+  /* modifier         key        function        argument */
+  { MODKEY,           XK_p,      spawn,          {.v = dmenucmd } },
+  { MODKEY|ShiftMask, XK_Return, spawn,          {.v = termcmd } },
+  { MODKEY,           XK_f,      spawn,          {.v = termcmd } },
+  { MODKEY,           XK_g,      spawn,          {.v = browsercmd } },
+  { MODKEY,           XK_b,      togglebar,      {0} },
+  { MODKEY,           XK_j,      focusstack,     {.i = +1 } },
+  { MODKEY,           XK_k,      focusstack,     {.i = -1 } },
+  { MODKEY,           XK_i,      incnmaster,     {.i = +1 } },
+  { MODKEY,           XK_d,      incnmaster,     {.i = -1 } },
+  { MODKEY,           XK_h,      setmfact,       {.f = -0.05} },
+  { MODKEY,           XK_l,      setmfact,       {.f = +0.05} },
+  { MODKEY,           XK_Return, zoom,           {0} },
+  /* { MODKEY,           XK_Tab,    view,           {0} }, */
+  { 0,                XK_Alt_L,  start_alt_tab,  {0} },
+  { MODKEY,           XK_Tab,    alt_tab,        {0} },
+  { MODKEY|ShiftMask, XK_c,      killclient,     {0} },
+  { MODKEY,           XK_grave,  killclient,     {0} },
+  { MODKEY,           XK_t,      setlayout,      {.v = &layouts[0]} },
+  /* { MODKEY,           XK_f,      setlayout,      {.v = &layouts[1]} }, */
+  { MODKEY,           XK_m,      setlayout,      {.v = &layouts[2]} },
+  { MODKEY,           XK_space,  setlayout,      {0} },
+  { MODKEY|ShiftMask, XK_space,  togglefloating, {0} },
+  { MODKEY,           XK_0,      view,           {.ui = ~0 } },
+  { MODKEY|ShiftMask, XK_0,      tag,            {.ui = ~0 } },
+  { MODKEY,           XK_comma,  focusmon,       {.i = -1 } },
+  { MODKEY,           XK_period, focusmon,       {.i = +1 } },
+  { MODKEY|ShiftMask, XK_comma,  tagmon,         {.i = -1 } },
+  { MODKEY|ShiftMask, XK_period, tagmon,         {.i = +1 } },
+  TAGKEYS(            XK_1,                      0)
+  TAGKEYS(            XK_2,                      1)
+  TAGKEYS(            XK_3,                      2)
+  TAGKEYS(            XK_4,                      3)
+  TAGKEYS(            XK_5,                      4)
+  TAGKEYS(            XK_6,                      5)
+  TAGKEYS(            XK_7,                      6)
+  TAGKEYS(            XK_8,                      7)
+  TAGKEYS(            XK_9,                      8)
+  { MODKEY|ShiftMask, XK_q,      quit,           {0} },
 };
 
 /* button definitions */
@@ -113,3 +126,49 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
 
+
+
+/* focus and restack a client */
+static void focus_restack(Client *c)
+   { if (c) { focus(c); restack(selmon); } }
+
+static Client *next_visible(Client *c)
+{
+   for(/* DO_NOTHING */; c && !ISVISIBLE(c); c=c->snext);
+   return c;
+}
+
+static int count_visible(void)
+{
+   int count = 0;
+   for (Client *c=next_visible(selmon->stack); c; c = next_visible(c->snext))
+      count += 1;
+   return count;
+}
+
+static Client *get_nth_client(int n)
+{
+   Client *c;
+   for (c=next_visible(selmon->stack); c && n--; c = next_visible(c->snext));
+   return c;
+}
+
+static void alt_tab(const Arg *arg)
+{
+   // put all of the windows back in their original focus/stack position */
+   for (int i=0; i<alt_tab_count; i+=1)
+      focus_restack(get_nth_client(alt_tab_count));
+
+   // focus and restack the nth window */
+   alt_tab_count = (alt_tab_count + 1) % count_visible();
+   focus_restack(get_nth_client(alt_tab_count));
+}
+
+/*
+static Key keys[] = {
+   // ...
+   { 0,       XK_Alt_L,   start_alt_tab,  {0} },
+   { MODKEY,  XK_Tab,     alt_tab,        {0} },
+   // ...
+};
+*/
